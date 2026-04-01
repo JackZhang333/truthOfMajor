@@ -17,10 +17,17 @@ import {
 } from "lucide-react";
 
 interface ExpertSpecialty {
-  majors: {
-    name: string;
-    slug: string;
-  };
+  name: string;
+  slug: string;
+}
+
+interface RawSpecialtyMajor {
+  name?: unknown;
+  slug?: unknown;
+}
+
+interface RawExpertSpecialty {
+  majors: RawSpecialtyMajor | RawSpecialtyMajor[] | null;
 }
 
 interface ExpertAnswer {
@@ -84,6 +91,23 @@ export default async function ExpertDetailPage({ params }: ExpertDetailPageProps
     .select("majors(name, slug)")
     .eq("expert_id", id);
 
+  const normalizedSpecialties: ExpertSpecialty[] = (
+    (specialties ?? []) as RawExpertSpecialty[]
+  ).flatMap((specialty) => {
+      if (!specialty.majors) {
+        return [];
+      }
+
+      const majors = Array.isArray(specialty.majors)
+        ? specialty.majors
+        : [specialty.majors];
+
+      return majors.map((major) => ({
+        name: String(major.name ?? ""),
+        slug: String(major.slug ?? ""),
+      }));
+    });
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Breadcrumb */}
@@ -146,15 +170,15 @@ export default async function ExpertDetailPage({ params }: ExpertDetailPageProps
             </>
           )}
 
-          {specialties && specialties.length > 0 && (
+          {normalizedSpecialties.length > 0 && (
             <>
               <Separator className="my-6" />
               <div>
                 <h3 className="font-medium mb-3">擅长专业</h3>
                 <div className="flex flex-wrap gap-2">
-                  {(specialties as ExpertSpecialty[]).map((spec) => (
-                    <Link key={spec.majors.slug} href={`/majors/${spec.majors.slug}`}>
-                      <Badge variant="secondary">{spec.majors.name}</Badge>
+                  {normalizedSpecialties.map((spec) => (
+                    <Link key={spec.slug} href={`/majors/${spec.slug}`}>
+                      <Badge variant="secondary">{spec.name}</Badge>
                     </Link>
                   ))}
                 </div>

@@ -66,6 +66,8 @@ export default async function AdminPage() {
     .from("majors")
     .select("*", { count: "exact", head: true });
 
+  const safePendingExpertCount = pendingExpertCount ?? 0;
+
   // 获取待审核的专家申请
   const { data: pendingExperts } = await supabase
     .from("experts")
@@ -144,8 +146,8 @@ export default async function AdminPage() {
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
               待审核专家申请
-              {pendingExpertCount > 0 && (
-                <Badge variant="destructive">{pendingExpertCount}</Badge>
+              {safePendingExpertCount > 0 && (
+                <Badge variant="destructive">{safePendingExpertCount}</Badge>
               )}
             </CardTitle>
             <CardDescription>

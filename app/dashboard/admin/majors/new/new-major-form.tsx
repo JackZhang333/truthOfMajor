@@ -110,7 +110,9 @@ export function NewMajorForm({ categories }: NewMajorFormProps) {
           <Label htmlFor="category">分类</Label>
           <Select
             value={formData.category_id}
-            onValueChange={(value) => setFormData({ ...formData, category_id: value })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, category_id: value ?? "" })
+            }
           >
             <SelectTrigger id="category">
               <SelectValue placeholder="选择分类">
@@ -131,7 +133,9 @@ export function NewMajorForm({ categories }: NewMajorFormProps) {
           <Label htmlFor="degree_type">学位类型</Label>
           <Select
             value={formData.degree_type}
-            onValueChange={(value) => setFormData({ ...formData, degree_type: value })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, degree_type: value ?? "" })
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="选择学位类型" />
@@ -161,7 +165,9 @@ export function NewMajorForm({ categories }: NewMajorFormProps) {
           <Label htmlFor="status">状态 *</Label>
           <Select
             value={formData.status}
-            onValueChange={(value) => setFormData({ ...formData, status: value })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, status: value ?? "draft" })
+            }
             required
           >
             <SelectTrigger>
