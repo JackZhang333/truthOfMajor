@@ -25,19 +25,24 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, ChevronLeft } from "lucide-react";
 
+interface Category {
+  id: string;
+  name: string;
+}
+
 export default function AskQuestionPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const router = useRouter();
-  const supabase = createClient();
 
   // Load categories on mount
   useEffect(() => {
     const loadCategories = async () => {
+      const supabase = createClient();
       const { data } = await supabase
         .from("categories")
         .select("*")
@@ -46,6 +51,8 @@ export default function AskQuestionPage() {
     };
     loadCategories();
   }, []);
+
+  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +64,7 @@ export default function AskQuestionPage() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      setError("请先登录");
+      setError("请先登录后再提问，这样你可以收到后续回答和提醒。");
       setLoading(false);
       return;
     }
@@ -98,9 +105,9 @@ export default function AskQuestionPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">我要提问</CardTitle>
+          <CardTitle className="text-2xl">提出你的问题</CardTitle>
           <CardDescription>
-            描述你的问题，专业领域的专家会为你解答
+            把分数段、兴趣、顾虑和想了解的方向写具体一点，专家会更容易给出有用建议。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -117,7 +124,7 @@ export default function AskQuestionPage() {
               </Label>
               <Input
                 id="title"
-                placeholder="简洁明了地描述你的问题"
+                placeholder="例如：女生适合学土木工程吗？就业会不会太辛苦？"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
@@ -128,7 +135,7 @@ export default function AskQuestionPage() {
               <Label htmlFor="category">问题分类</Label>
               <Select value={categoryId} onValueChange={(v) => setCategoryId(v || "")}>
                 <SelectTrigger>
-                  <SelectValue placeholder="选择问题分类" />
+                  <SelectValue placeholder="选一个最接近的问题方向" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
@@ -146,7 +153,7 @@ export default function AskQuestionPage() {
               </Label>
               <Textarea
                 id="content"
-                placeholder="详细描述你的问题，包括背景、困惑等，方便专家更好地回答"
+                placeholder="可以补充你的选科、成绩区间、城市偏好、家庭顾虑，以及你最想避免的情况。信息越具体，回答越有针对性。"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={8}
@@ -159,10 +166,10 @@ export default function AskQuestionPage() {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    提交中...
+                    正在发布问题...
                   </>
                 ) : (
-                  "提交问题"
+                  "发布问题"
                 )}
               </Button>
               <Button

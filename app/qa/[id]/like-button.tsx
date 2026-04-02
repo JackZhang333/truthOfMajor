@@ -45,6 +45,15 @@ export function LikeButton({ answerId, initialLikes }: LikeButtonProps) {
   }, [answerId, supabase]);
 
   const handleLike = async () => {
+    // 乐观更新：先获取当前状态
+    const previousLiked = isLiked;
+    const previousLikes = likes;
+
+    // 立即更新 UI
+    const newLiked = !isLiked;
+    const newLikes = newLiked ? likes + 1 : likes - 1;
+    setIsLiked(newLiked);
+    setLikes(newLikes);
     setIsLoading(true);
 
     try {
@@ -53,12 +62,15 @@ export function LikeButton({ answerId, initialLikes }: LikeButtonProps) {
       } = await supabase.auth.getUser();
 
       if (!user) {
+        // 未登录，回滚状态
+        setIsLiked(previousLiked);
+        setLikes(previousLikes);
         alert("请先登录");
         setIsLoading(false);
         return;
       }
 
-      if (isLiked) {
+      if (previousLiked) {
         // 取消点赞
         const { error } = await supabase
           .from("likes")
@@ -72,11 +84,8 @@ export function LikeButton({ answerId, initialLikes }: LikeButtonProps) {
         // 更新点赞数
         await supabase
           .from("answers")
-          .update({ likes: likes - 1 })
+          .update({ likes: previousLikes - 1 })
           .eq("id", answerId);
-
-        setLikes((prev) => prev - 1);
-        setIsLiked(false);
       } else {
         // 添加点赞
         const { error } = await supabase.from("likes").insert({
@@ -90,14 +99,14 @@ export function LikeButton({ answerId, initialLikes }: LikeButtonProps) {
         // 更新点赞数
         await supabase
           .from("answers")
-          .update({ likes: likes + 1 })
+          .update({ likes: previousLikes + 1 })
           .eq("id", answerId);
-
-        setLikes((prev) => prev + 1);
-        setIsLiked(true);
       }
     } catch (error) {
+      // 出错时回滚状态
       console.error("点赞失败:", error);
+      setIsLiked(previousLiked);
+      setLikes(previousLikes);
     } finally {
       setIsLoading(false);
     }

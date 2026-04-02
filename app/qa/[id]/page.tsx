@@ -58,43 +58,49 @@ export default async function QuestionDetailPage({
     notFound();
   }
 
-  // 获取回答
+  // 获取回答及其关联的专家和用户信息（批量查询优化）
   const { data: answers } = await supabase
     .from("answers")
-    .select("*")
+    .select(`
+      *,
+      experts:expert_id (
+        nickname,
+        current_company,
+        position,
+        level,
+        user_id,
+        profiles:user_id (
+          full_name,
+          avatar_url
+        )
+      )
+    `)
     .eq("question_id", id)
     .order("is_featured", { ascending: false })
     .order("created_at", { ascending: true });
 
-  // 获取回答相关的专家和用户信息
-  const answersWithDetails = await Promise.all(
-    (answers || []).map(async (answer) => {
-      // 获取专家信息
-      const { data: expert } = await supabase
-        .from("experts")
-        .select("nickname, current_company, position, level, user_id")
-        .eq("id", answer.expert_id)
-        .eq("status", "approved")
-        .single();
-
-      // 获取用户信息
-      let profile = null;
-      if (expert?.user_id) {
-        const { data: p } = await supabase
-          .from("profiles")
-          .select("full_name, avatar_url")
-          .eq("id", expert.user_id)
-          .single();
-        profile = p;
-      }
-
-      return {
-        ...answer,
-        experts: expert || null,
-        profiles: profile,
-      };
-    })
-  );
+  // 格式化回答数据
+  const answersWithDetails: AnswerWithDetails[] = (answers || []).map((answer: any) => ({
+    id: answer.id,
+    content: answer.content,
+    created_at: answer.created_at,
+    is_featured: answer.is_featured,
+    likes: answer.likes,
+    experts: answer.experts
+      ? {
+          nickname: answer.experts.nickname,
+          current_company: answer.experts.current_company,
+          position: answer.experts.position,
+          level: answer.experts.level,
+        }
+      : null,
+    profiles: answer.experts?.profiles
+      ? {
+          full_name: answer.experts.profiles.full_name,
+          avatar_url: answer.experts.profiles.avatar_url,
+        }
+      : null,
+  }));
 
   // 检查当前用户是否是认证专家
   let isExpert = false;

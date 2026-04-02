@@ -62,13 +62,13 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
       .maybeSingle();
 
     if (existingExpert?.status === "pending") {
-      setError("您的申请正在审核中，请前往个人中心查看进度");
+      setError("你的申请还在审核中，暂时不需要重复提交。你可以去个人中心查看最新进度。");
       setLoading(false);
       return;
     }
 
     if (existingExpert?.status === "approved") {
-      setError("您已经是认证专家，可直接前往专家中心");
+      setError("你已经通过审核，可以直接前往专家中心回答问题。");
       setLoading(false);
       return;
     }
@@ -125,9 +125,9 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
         <Card>
           <CardContent className="p-12 text-center">
             <CheckCircle2 className="mx-auto mb-6 h-16 w-16 text-green-500" />
-            <h1 className="mb-4 text-2xl font-bold">申请已提交</h1>
+            <h1 className="mb-4 text-2xl font-bold">申请已提交，等待审核</h1>
             <p className="mb-6 text-muted-foreground">
-              感谢您的申请！我们将在1-3个工作日内完成审核，审核结果将通过邮件通知您。
+              我们会在 1 到 3 个工作日内完成审核。审核结果会通过邮件通知，你也可以在个人中心随时查看状态。
             </p>
             <div className="flex justify-center gap-4">
               <Link href="/">
@@ -148,7 +148,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
       <div className="mb-8">
         <h1 className="mb-4 text-center text-3xl font-bold">成为专家</h1>
         <p className="mb-8 text-center text-muted-foreground">
-          登录完成后，填写申请信息即可开始专家入驻流程
+          填写你的学习和工作经历，通过审核后就能以专家身份回答学生问题。
         </p>
 
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -157,7 +157,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
               <Award className="mx-auto mb-3 h-8 w-8 text-primary" />
               <h3 className="mb-1 font-semibold">个人品牌建设</h3>
               <p className="text-sm text-muted-foreground">
-                展示职业履历，建立个人品牌
+                展示真实经历，让更多学生认识你
               </p>
             </CardContent>
           </Card>
@@ -166,7 +166,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
               <Users className="mx-auto mb-3 h-8 w-8 text-primary" />
               <h3 className="mb-1 font-semibold">社会价值</h3>
               <p className="text-sm text-muted-foreground">
-                帮助学弟学妹，获得成就感
+                帮助学弟学妹少走弯路
               </p>
             </CardContent>
           </Card>
@@ -175,7 +175,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
               <TrendingUp className="mx-auto mb-3 h-8 w-8 text-primary" />
               <h3 className="mb-1 font-semibold">职业发展</h3>
               <p className="text-sm text-muted-foreground">
-                拓展人脉，了解行业趋势
+                在答疑中沉淀影响力和行业观察
               </p>
             </CardContent>
           </Card>
@@ -186,7 +186,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
         <CardHeader>
           <CardTitle>专家入驻申请</CardTitle>
           <CardDescription>
-            请填写真实信息，我们会尽快完成审核
+            请尽量填写真实、可核验的信息，这会直接影响审核速度。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -204,7 +204,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
                 </Label>
                 <Input
                   id="nickname"
-                  placeholder="对外展示的昵称"
+                  placeholder="这是学生在平台上看到的名字"
                   value={formData.nickname}
                   onChange={(e) =>
                     setFormData({ ...formData, nickname: e.target.value })
@@ -224,7 +224,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
                   }
                 >
                   <SelectTrigger id="education">
-                    <SelectValue placeholder="选择学历" />
+                    <SelectValue placeholder="选择你的最高学历" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="本科">本科</SelectItem>
@@ -240,7 +240,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
                 </Label>
                 <Input
                   id="currentCompany"
-                  placeholder="如：某互联网公司"
+                  placeholder="例如：字节跳动、某三甲医院、某会计师事务所"
                   value={formData.currentCompany}
                   onChange={(e) =>
                     setFormData({ ...formData, currentCompany: e.target.value })
@@ -255,7 +255,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
                 </Label>
                 <Input
                   id="position"
-                  placeholder="如：高级软件工程师"
+                  placeholder="例如：产品经理、结构工程师、临床医生"
                   value={formData.position}
                   onChange={(e) =>
                     setFormData({ ...formData, position: e.target.value })
@@ -273,7 +273,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
                   type="number"
                   min="0"
                   max="50"
-                  placeholder="如：5"
+                  placeholder="填数字，例如 5"
                   value={formData.workYears}
                   onChange={(e) =>
                     setFormData({ ...formData, workYears: e.target.value })
@@ -288,7 +288,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
                 </Label>
                 <Input
                   id="university"
-                  placeholder="如：清华大学"
+                  placeholder="填写你的毕业院校全称"
                   value={formData.university}
                   onChange={(e) =>
                     setFormData({ ...formData, university: e.target.value })
@@ -303,7 +303,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
                 </Label>
                 <Input
                   id="major"
-                  placeholder="如：计算机科学与技术"
+                  placeholder="填写你的本科或最相关专业，例如计算机科学与技术"
                   value={formData.major}
                   onChange={(e) =>
                     setFormData({ ...formData, major: e.target.value })
@@ -318,7 +318,7 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
                 </Label>
                 <Textarea
                   id="bio"
-                  placeholder="请简要介绍您的学习、工作经历，以及可以帮助学生的方向"
+                  placeholder="请写清楚你的学习经历、工作路径，以及你最适合回答哪些问题，例如就业方向、读研选择、行业现实等。"
                   value={formData.bio}
                   onChange={(e) =>
                     setFormData({ ...formData, bio: e.target.value })
@@ -333,10 +333,10 @@ export function BecomeExpertForm({ userId }: BecomeExpertFormProps) {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  提交中...
+                  正在提交申请...
                 </>
               ) : (
-                "提交申请"
+                "提交专家申请"
               )}
             </Button>
           </form>
